@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        '-//Hibernate/Hibernate Mapping DTD 3.0//EN'
+        'http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd'>
+<hibernate-mapping>
+    <class name="com.ahpu.erp.auth.role.model.RoleModel" table="tbl_role">
+        <id name="uuid">
+            <generator class="native" />
+        </id>
+        <property name="name"/>
+        <property name="code"/>
+	<!-- 对资源多对多 -->
+	<set name="reses" table="tbl_role_res" lazy="false">
+		<key column="roleUuid"/>
+		<many-to-many 
+			class="com.ahpu.erp.auth.resource.model.ResourceModel"
+			column="resUuid"
+		/>
+	</set>
+	<!-- 对员工多对多 -->
+	<set name="emps" table="tbl_emp_role">
+		<key column="roleUuid"/>
+		<many-to-many 
+			column="empUuid"
+			class="com.ahpu.erp.auth.emp.model.EmpModel"
+		/>
+	</set>
+	</class>
+	
+</hibernate-mapping>

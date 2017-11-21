@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+    
+    <struts>
+    <constant name="struts.devMode" value="false" />
+     <constant name="struts.ui.theme" value="simple" />
+     <constant name="struts.custom.i18n.resource" value="message" />
+    <package name="ERP" namespace="/" extends="struts-default">
+    <!-- 自定义拦截器 --> 
+    	<interceptors>
+    		<interceptor name="loginInterceptor" class="com.ahpu.erp.util.interceptor.LoginInterceptor"/>
+    		<interceptor name="errorInterceptor" class="com.ahpu.erp.util.interceptor.ExceptionInterceptor"/>
+    		<interceptor name="authInterceptor" class="com.ahpu.erp.util.interceptor.AuthInterceptor"/>
+    		
+    		<interceptor-stack name="systemStack">
+    			<!-- 调用自定义拦截器 -->
+    			<!-- 调用系统默认拦截器 -->
+    			<interceptor-ref name="errorInterceptor"/>
+    			<interceptor-ref name="loginInterceptor"/>
+    			<interceptor-ref name="authInterceptor"/>
+    			<interceptor-ref name="defaultStack"/>
+    		</interceptor-stack>
+    		
+    	</interceptors>
+    	
+    	<default-interceptor-ref name="systemStack"/>
+    	 
+    	<!-- 对于struts拦截器中出现的结果集，必须与全局result匹配 --> 
+    	<global-results>
+    		<result name="noLogin">/WEB-INF/pages/login.jsp</result>
+    		<result name="error">/WEB-INF/pages/error.jsp</result>
+    	</global-results>
+    	 
+    	<!-- <action name="page_*">
+    		<result>/WEB-INF/jsps/{1}.jsp</result>
+    	</action>
+    	 -->
+    	
+    	<action name="dep_*" class="depAction" method="{1}">
+    		<result name="list">/WEB-INF/pages/dep/main_list.jsp</result>
+    		<result name="input">/WEB-INF/pages/dep/main_input.jsp</result>
+    		<!-- 防止二次提交 -->
+    		<result name="toList" type="redirectAction">dep_list</result>
+    	</action>
+    	
+    	<!-- Emp -->
+    	<action name="emp_*" class="empAction" method="{1}">
+    		<result name="list">/WEB-INF/pages/employee/main_list.jsp</result>
+    		<result name="input">/WEB-INF/pages/employee/main_input.jsp</result>
+    		<result name="toList" type="redirectAction">emp_list</result>
+    		<result name="tochangePwd">/WEB-INF/pages/employee/revise_user.jsp</result>
+    		<result name="loginFail">/WEB-INF/pages/login.jsp</result>
+    		<result name="loginSuccess">/WEB-INF/pages/index.jsp</result>
+    	</action>
+    	
+    	<!-- Role -->
+    	<action name="role_*" class="roleAction" method="{1}">
+    		<result name="list">/WEB-INF/pages/role/role_list.jsp</result>
+    		<result name="input">/WEB-INF/pages/role/role_input.jsp</result>
+    		<result name="toList" type="redirectAction">role_list</result>
+    	</action> 
+    	<!-- Resource -->
+    	 <action name="resource_*" class="resourceAction" method="{1}">
+    		<result name="list">/WEB-INF/pages/resource/res_list.jsp</result>
+    		<result name="input">/WEB-INF/pages/resource/res_input.jsp</result>
+    		<result name="toList" type="redirectAction">resource_list</result>
+    	</action>
+    	<!-- Menu -->
+    	 <action name="menu_*" class="menuAction" method="{1}">
+    		<result name="list">/WEB-INF/pages/menu/menu_list.jsp</result>
+    		<result name="input">/WEB-INF/pages/menu/menu_input.jsp</result>
+    		<result name="toList" type="redirectAction">menu_list</result>
+    	</action>
+    	<!-- Supplier -->
+    	  <action name="supplier_*" class="supplierAction" method="{1}">
+    		<!-- <result name="list">/WEB-INF/pages/menu/menu_list.jsp</result>
+    		<result name="input">/WEB-INF/pages/menu/menu_input.jsp</result>
+    		<result name="toList" type="redirectAction">menu_list</result> -->
+    	</action>
+    	<!-- Goodstype -->
+    	<action name="goodstype_*" class="goodstypeAction" method="{1}">
+    		<!-- <result name="list">/WEB-INF/pages/menu/menu_list.jsp</result>
+    		<result name="input">/WEB-INF/pages/menu/menu_input.jsp</result>
+    		<result name="toList" type="redirectAction">menu_list</result> -->
+    	</action>
+    </package>
+    </struts>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	
+	<!-- 引入外部jdbc.properties文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	
+	<!-- 配置连接池的信息 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<!-- 数据库连接的四个基本参数 -->
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+	<!-- 配置Hibernate的相关属性 -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<!-- 注入连接池 -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 配置Hibernate的其他的属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<!-- Hibernate的方言 -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.connection.autocommit">false</prop>
+			</props>
+		</property>
+		<!-- 配置映射文件 -->
+		<property name="mappingResources">
+			<list>
+			<!-- EMP -->
+			<value>com/ahpu/erp/auth/emp/model/EmpModel.hbm.xml</value>
+			<!-- DEP -->
+			<value>com/ahpu/erp/auth/dep/model/DepModel.hbm.xml</value>
+			 <!-- ROLE -->
+			<value>com/ahpu/erp/auth/role/model/RoleModel.hbm.xml</value>
+			<!-- RESOURCE -->
+			<value>com/ahpu/erp/auth/resource/model/ResourceModel.hbm.xml</value>  
+			<!-- MENU -->
+			<value>com/ahpu/erp/auth/menu/model/MenuModel.hbm.xml</value>
+			<!-- GOODSTYPE -->
+			<value>com/ahpu/erp/auth/goodstype/model/GoodstypeModel.hbm.xml</value>
+			<!-- SUPPLIER -->
+			<value>com/ahpu/erp/auth/supplier/model/SupplierModel.hbm.xml</value>
+			</list>
+		</property>	
+	</bean>
+	
+	<!-- 声明式事务管理 -->
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<!-- 注入 sessionFactory-->
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	<!-- 配置Action================================== -->
+	<!-- empAction -->
+	<bean id="empAction" class="com.ahpu.erp.auth.emp.action.EmpAction" scope="prototype">
+		<property name="empService" ref="empService"/>
+		<property name="depService" ref="depService" />
+		<property name="roleService" ref="roleService" />
+	</bean>
+	<!-- depAction -->
+	<bean id="depAction" class="com.ahpu.erp.auth.dep.action.DepAction" scope="prototype">
+		<property name="depService" ref="depService"/>
+	</bean>
+	<!-- roleAction -->
+	 <bean id="roleAction" class="com.ahpu.erp.auth.role.action.RoleAction" scope="prototype">
+		<property name="roleService" ref="roleService"/>
+		<property name="resourceService" ref="resourceService" />
+	</bean>
+	<!-- resourceAction -->
+	<bean id="resourceAction" class="com.ahpu.erp.auth.resource.action.ResourceAction" scope="prototype">
+		<property name="resourceService" ref="resourceService"/>
+	</bean> 
+	<!-- menuAction -->
+	<bean id="menuAction" class="com.ahpu.erp.auth.menu.action.MenuAction" scope="prototype">
+		<property name="menuService" ref="menuService"/>
+		<property name="roleService" ref="roleService" />
+	</bean>
+	<!-- supplierAction -->
+	<bean id="supplierAction" class="com.ahpu.erp.auth.supplier.action.SupplierAction" scope="prototype">
+		<property name="supplierService" ref="supplierService"/>
+	</bean>
+	<!-- goodstypeAction -->
+	<bean id="goodstypeAction" class="com.ahpu.erp.auth.goodstype.action.GoodstypeAction" scope="prototype">
+		<property name="goodstypeService" ref="goodstypeService"/>
+	</bean>
+	<!-- 配置Service================================== -->
+	<!-- empService -->
+	<bean id="empService" class="com.ahpu.erp.auth.emp.service.impl.EmpServiceImpl">
+		<property name="empDao" ref="empDao"/>
+	</bean>
+	<!-- depService -->
+	<bean id="depService" class="com.ahpu.erp.auth.dep.service.DepServiceImpl">
+		<property name="depDao" ref="depDao"/>
+	</bean>
+	<!-- roleService -->
+	 <bean id="roleService" class="com.ahpu.erp.auth.role.service.impl.RoleServiceImpl">
+		<property name="roleDao" ref="roleDao"/>
+	</bean>
+	<!-- resourceService -->
+	<bean id="resourceService" class="com.ahpu.erp.auth.resource.service.impl.ResourceServiceImpl">
+		<property name="resourceDao" ref="resourceDao"/>
+	</bean> 
+	<!-- menuService -->
+	<bean id="menuService" class="com.ahpu.erp.auth.menu.service.impl.MenuServiceImpl">
+		<property name="menuDao" ref="menuDao"/>
+	</bean> 
+	<!-- supplierService -->
+	<bean id="supplierService" class="com.ahpu.erp.auth.supplier.service.impl.SupplierServiceImpl">
+		<property name="supplierDao" ref="supplierDao"/>
+	</bean>
+	<!-- goodstypeService -->
+	<bean id="goodstypeService" class="com.ahpu.erp.auth.goodstype.service.impl.GoodstypeServiceImpl">
+		<property name="goodstypeDao" ref="goodstypeDao"/>
+	</bean>
+	<!-- 配置Dao================================== -->
+	<!-- empDao -->
+	<bean id="empDao" class="com.ahpu.erp.auth.emp.dao.impl.EmpDaoImpl">
+		<!-- 注入sessionFactory -->
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!-- depDao -->
+	<bean id="depDao" class="com.ahpu.erp.auth.dep.dao.DepDaoImpl">
+		<!-- 注入sessionFactory -->
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!-- roleDao -->
+	 <bean id="roleDao" class="com.ahpu.erp.auth.role.dao.impl.RoleDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!-- resourceDao -->
+	<bean id="resourceDao" class="com.ahpu.erp.auth.resource.dao.impl.ResourceDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!-- menuDao -->
+	<bean id="menuDao" class="com.ahpu.erp.auth.menu.dao.impl.MenuDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	  <!-- supplierDao -->
+	 <bean id="supplierDao" class="com.ahpu.erp.auth.supplier.dao.impl.SupplierDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!-- goodstypeDao -->
+	<bean id="goodstypeDao" class="com.ahpu.erp.auth.goodstype.dao.impl.GoodstypeDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	</beans>
+	
+	
+	
